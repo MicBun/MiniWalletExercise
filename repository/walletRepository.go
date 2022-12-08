@@ -2,10 +2,12 @@ package repository
 
 import (
 	"miniWalletExercise/model"
+	"sync"
 	"time"
 )
 
 type WalletRepository struct {
+	Mu         sync.Mutex
 	Repository []model.Wallet
 }
 
@@ -51,6 +53,8 @@ func (wr *WalletRepository) ViewWallet(walletId string) model.Wallet {
 }
 
 func (wr *WalletRepository) UpdateBalance(walletId string, balance int) {
+	wr.Mu.Lock()
+	defer wr.Mu.Unlock()
 	for i, wallet := range wr.Repository {
 		if wallet.Id == walletId {
 			wr.Repository[i].Balance += balance
